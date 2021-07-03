@@ -1,7 +1,7 @@
 ## Mybatis
-##### mybatis-generator pagehelper  page对象二次封装
+##### mybatis-generator pagehelper  page 对象二次封装
 org.zhiqiang.lu.easycode.spring.aop.model.mybatis.generator.PageInfo<T>
-##### mybatis-plus BaseController定义封装
+##### mybatis-plus BaseController 定义封装
 org.zhiqiang.lu.easycode.spring.aop.model.mybatis.plus.BaseController<S extends IService<T>, T> 
 
 
