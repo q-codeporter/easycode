@@ -1,4 +1,4 @@
-package org.zhiqiang.lu.easycode.spring.aop.model;
+package org.zhiqiang.lu.easycode.spring.aop.model.mybatis.generator;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageSerializable;
