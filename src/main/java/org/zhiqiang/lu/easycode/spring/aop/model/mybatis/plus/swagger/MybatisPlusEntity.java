@@ -106,18 +106,29 @@ public class MybatisPlusEntity {
 
   @ApiModel(value = "查询条件", description = "查询条件")
   public static class CriteriaEntity {
-    @ApiModelProperty(value = "sql查询条件：name like {0}")
-    private String sql;
+    @ApiModelProperty(value = "查询类型：eq")
+    private String type;
 
-    @ApiModelProperty(value = "sql注入的值：['%小明%']")
+    @ApiModelProperty(value = "匹配的的列名：user_name")
+    private String column;
+
+    @ApiModelProperty(value = "注入的值：['小明']")
     private List<String> params;
 
-    public String getSql() {
-      return sql;
+    public String getType() {
+      return type;
     }
 
-    public void setSql(String sql) {
-      this.sql = sql;
+    public void setType(String type) {
+      this.type = type;
+    }
+
+    public String getColumn() {
+      return column;
+    }
+
+    public void setColumn(String column) {
+      this.column = column;
     }
 
     public List<String> getParams() {

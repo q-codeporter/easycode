@@ -55,7 +55,7 @@ public class BaseController<S extends IService<T>, T> {
       @ApiParam(value = "实体数据", required = true) @RequestBody MybatisPlusEntity.ObjectEntity<T> object) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     for (MybatisPlusEntity.CriteriaEntity criteria : object.getCriterias()) {
-      queryWrapper.apply(StringUtils.isNotBlank(criteria.getSql()), criteria.getSql(), criteria.getParams());
+      queryWrapper(queryWrapper, criteria);
     }
     return service.update(object.getEntity(), queryWrapper);
   }
@@ -78,7 +78,7 @@ public class BaseController<S extends IService<T>, T> {
       @ApiParam(value = "查询条件") @RequestBody(required = false) List<MybatisPlusEntity.CriteriaEntity> criterias) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     for (MybatisPlusEntity.CriteriaEntity criteria : criterias) {
-      queryWrapper.apply(StringUtils.isNotBlank(criteria.getSql()), criteria.getSql(), criteria.getParams());
+      queryWrapper(queryWrapper, criteria);
     }
     return service.remove(queryWrapper);
   }
@@ -96,7 +96,7 @@ public class BaseController<S extends IService<T>, T> {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     if (criterias != null) {
       for (MybatisPlusEntity.CriteriaEntity criteria : criterias) {
-        queryWrapper.apply(StringUtils.isNotBlank(criteria.getSql()), criteria.getSql(), criteria.getParams());
+        queryWrapper(queryWrapper, criteria);
       }
     }
     return service.getOne(queryWrapper);
@@ -115,7 +115,7 @@ public class BaseController<S extends IService<T>, T> {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     if (list != null) {
       for (MybatisPlusEntity.CriteriaEntity criteria : list.getCriterias()) {
-        queryWrapper.apply(StringUtils.isNotBlank(criteria.getSql()), criteria.getSql(), criteria.getParams());
+        queryWrapper(queryWrapper, criteria);
       }
       for (OrderItem io : list.getOrderItems()) {
         if (StringUtils.isNotBlank(io.getColumn())) {
@@ -146,8 +146,59 @@ public class BaseController<S extends IService<T>, T> {
     Page<T> p = new Page<T>(page.getCurrent(), page.getSize());
     p.setOrders(page.getOrderItems());
     for (MybatisPlusEntity.CriteriaEntity criteria : page.getCriterias()) {
-      queryWrapper.apply(StringUtils.isNotBlank(criteria.getSql()), criteria.getSql(), criteria.getParams());
+      queryWrapper(queryWrapper, criteria);
     }
     return service.page(p, queryWrapper);
+  }
+
+  private void queryWrapper(QueryWrapper<T> queryWrapper, MybatisPlusEntity.CriteriaEntity criteria) {
+    if ("eq".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.eq(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("ne".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.ne(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("gt".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.gt(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("ge".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.ge(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("lt".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.lt(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("le".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.le(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("between".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.between(criteria.getParams().size() == 2, criteria.getColumn(), criteria.getParams().get(0),
+          criteria.getParams().get(1));
+    }
+    if ("between".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.notBetween(criteria.getParams().size() == 2, criteria.getColumn(), criteria.getParams().get(0),
+          criteria.getParams().get(1));
+    }
+    if ("like".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.like(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("likeLeft".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.likeLeft(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("likeRight".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.likeRight(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
+    if ("notLike".equals(criteria.getType()) && criteria.getParams() != null) {
+      queryWrapper.notLike(StringUtils.isNotBlank(criteria.getParams().get(0)), criteria.getColumn(),
+          criteria.getParams().get(0));
+    }
   }
 }
