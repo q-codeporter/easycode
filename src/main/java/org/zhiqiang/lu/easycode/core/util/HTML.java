@@ -7,7 +7,6 @@ import java.util.Date;
 
 public class html {
 
-
     // 返回html代码
     private static String getHtmlCode(String httpUrl, String code) throws Exception {
         long star, end, time;
