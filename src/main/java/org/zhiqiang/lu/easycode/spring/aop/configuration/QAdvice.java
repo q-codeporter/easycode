@@ -1,12 +1,12 @@
 package org.zhiqiang.lu.easycode.spring.aop.configuration;
 
+import org.zhiqiang.lu.easycode.core.util.security;
 import org.zhiqiang.lu.easycode.spring.aop.annotation.Security;
 import org.zhiqiang.lu.easycode.spring.aop.annotation.Session;
 import org.zhiqiang.lu.easycode.spring.aop.model.DecryptException;
 import org.zhiqiang.lu.easycode.spring.aop.model.LogicException;
 import org.zhiqiang.lu.easycode.spring.aop.model.MissingParameterException;
 import org.zhiqiang.lu.easycode.spring.aop.model.ReturnMessage;
-import org.zhiqiang.lu.easycode.spring.aop.util.SECURITY;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -170,7 +170,7 @@ public class QAdvice implements WebMvcConfigurer {
           while ((i = inputMessage.getBody().read()) != -1) {
             baos.write(i);
           }
-          this.body = new ByteArrayInputStream(SECURITY.DECRYPT(baos.toString(), method, key).getBytes());
+          this.body = new ByteArrayInputStream(security.decrypt(baos.toString(), method, key).getBytes());
         } catch (final Exception e) {
           throw new DecryptException("密文参数解析失败");
         }
@@ -229,10 +229,10 @@ public class QAdvice implements WebMvcConfigurer {
       if (security != null && security.encrypt()) {
         try {
           if ("java.lang.String".equals(body.getClass().getName())) {
-            body = SECURITY.ENCRYPT((String) body, method, key);
+            body = org.zhiqiang.lu.easycode.core.util.security.encrypt((String) body, method, key);
           } else {
 
-            body = SECURITY.ENCRYPT(gson.toJson(body), method, key);
+            body = org.zhiqiang.lu.easycode.core.util.security.encrypt(gson.toJson(body), method, key);
           }
           message.setEncryption(true);
         } catch (final Exception e) {
