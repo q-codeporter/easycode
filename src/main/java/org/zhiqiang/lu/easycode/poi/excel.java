@@ -5,7 +5,7 @@ import com.aspose.cells.*; //引入aspose-cells-8.5.2.jar包
 
 import org.apache.poi.ss.usermodel.Sheet;
 
-public class ExcelUtil {
+public class excel {
   /**
    * 找到需要插入的行数，并新建一个POI的row对象
    * 
@@ -13,7 +13,7 @@ public class ExcelUtil {
    * @param rowIndex
    * @return
    */
-  public static void insertRow(Sheet sheet, Integer rowIndex) {
+  public static void insert_row(Sheet sheet, Integer rowIndex) {
     if (sheet.getRow(rowIndex) != null) {
       int lastRowNo = sheet.getLastRowNum();
       sheet.shiftRows(rowIndex, lastRowNo, 1);
@@ -28,7 +28,7 @@ public class ExcelUtil {
    * @param rowIndex
    * @return
    */
-  public static void insertRows(Sheet sheet, Integer rowStart, Integer rowEnd) {
+  public static void insert_rows(Sheet sheet, Integer rowStart, Integer rowEnd) {
     for (; rowStart <= rowEnd; rowStart++) {
       if (sheet.getRow(rowStart) != null) {
         int lastRowNo = sheet.getLastRowNum();
@@ -38,8 +38,8 @@ public class ExcelUtil {
     }
   }
 
-  public static void toPdf(String path, String path_out) {
-    if (!getLicense()) { // 验证License 若不验证则转化出的pdf文档会有水印产生
+  public static void to_pdf(String path, String path_out) {
+    if (!license()) { // 验证License 若不验证则转化出的pdf文档会有水印产生
       return;
     }
     try {
@@ -54,10 +54,10 @@ public class ExcelUtil {
     }
   }
 
-  private static boolean getLicense() {
+  private static boolean license() {
     boolean result = false;
     try {
-      InputStream is = ExcelUtil.class.getClassLoader().getResourceAsStream("license.xml"); // license.xml应放在..\WebRoot\WEB-INF\classes路径下
+      InputStream is = excel.class.getClassLoader().getResourceAsStream("license.xml"); // license.xml应放在..\WebRoot\WEB-INF\classes路径下
       License aposeLic = new License();
       aposeLic.setLicense(is);
       result = true;
@@ -68,6 +68,6 @@ public class ExcelUtil {
   }
 
   public static void main(String[] args) {
-    ExcelUtil.toPdf("D:/xls/cs.xlsm", "D:/xls/cs.pdf");
+    excel.to_pdf("D:/xls/cs.xlsm", "D:/xls/cs.pdf");
   }
 }
