@@ -180,7 +180,7 @@ public class BaseController<S extends IService<T>, T> {
       queryWrapper.between(criteria.getParams().size() == 2, criteria.getColumn(), criteria.getParams().get(0),
           criteria.getParams().get(1));
     }
-    if ("between".equals(criteria.getType()) && criteria.getParams() != null) {
+    if ("notBetween".equals(criteria.getType()) && criteria.getParams() != null) {
       queryWrapper.notBetween(criteria.getParams().size() == 2, criteria.getColumn(), criteria.getParams().get(0),
           criteria.getParams().get(1));
     }

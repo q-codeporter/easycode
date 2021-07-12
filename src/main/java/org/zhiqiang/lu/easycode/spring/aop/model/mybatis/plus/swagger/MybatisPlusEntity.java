@@ -106,7 +106,7 @@ public class MybatisPlusEntity {
 
   @ApiModel(value = "查询条件", description = "查询条件")
   public static class CriteriaEntity {
-    @ApiModelProperty(value = "查询类型：eq")
+    @ApiModelProperty(value = "查询类型：eq、ne、gt、ge、lt、le、between、notBetween、like、likeLeft、likeRight、notLike")
     private String type;
 
     @ApiModelProperty(value = "匹配的的列名：user_name")
