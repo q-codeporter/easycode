@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 
 public class MybatisPlusEntity {
   public static class PageEntity {
+   
     private Integer current = 1;
 
     private Integer size = 10;
@@ -94,16 +95,26 @@ public class MybatisPlusEntity {
   }
 
   public static class CriteriaEntity {
-    private String sql;
+    private String type;
+
+    private String column;
 
     private List<String> params;
 
-    public String getSql() {
-      return sql;
+    public String getType() {
+      return type;
     }
 
-    public void setSql(String sql) {
-      this.sql = sql;
+    public void setType(String type) {
+      this.type = type;
+    }
+
+    public String getColumn() {
+      return column;
+    }
+
+    public void setColumn(String column) {
+      this.column = column;
     }
 
     public List<String> getParams() {
