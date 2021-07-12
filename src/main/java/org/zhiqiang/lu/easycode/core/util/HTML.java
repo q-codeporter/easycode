@@ -5,7 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
-public class HTML {
+public class html {
 
 
     // 返回html代码
@@ -84,7 +84,7 @@ public class HTML {
      * @param inputCode 访问地址页面编码
      * @param outCode   生产html页面编码
      */
-    public static void FILE(String url, String path, String inputCode, String outCode) throws Exception {
+    public static void file(String url, String path, String inputCode, String outCode) throws Exception {
         writeHtml(path, getHtmlCode(url, inputCode));
         transferFile(path, outCode);
     }
@@ -95,7 +95,7 @@ public class HTML {
      * @param url  访问的地址
      * @param path 生产html文件位置
      */
-    public static void FILE(String url, String path) throws Exception {
+    public static void file(String url, String path) throws Exception {
         writeHtml(path, getHtmlCode(url, "UTF-8"));
         transferFile(path, "UTF-8");
     }

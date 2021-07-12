@@ -1,11 +1,10 @@
-package com.example.ssh.util;
+package org.zhiqiang.lu.easycode.core.util;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 
-import com.alibaba.fastjson.JSON;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelShell;
@@ -16,7 +15,7 @@ import com.jcraft.jsch.Session;
  * Created by riot94 on 1/6/2017.
  */
 
-public class SSH {
+public class linux {
 
   public static void main(String[] args) {
   }
@@ -34,7 +33,8 @@ public class SSH {
     return session;
   }
 
-  public void command(javax.websocket.Session sock_session, Session session, String... commands) throws Exception {
+  public StringBuffer exec(Session session, String... commands) throws Exception {
+    StringBuffer sb = new StringBuffer();
     String command = "";
     for (String c : commands) {
       command += " && " + c;
@@ -58,7 +58,7 @@ public class SSH {
           break;
         }
         String str = new String(tmp, 0, i);
-        sock_session.getBasicRemote().sendText(str);
+        sb.append(str);
       }
       while (error.available() > 0) {
         int i = error.read(tmp_error, 0, 1024);
@@ -66,7 +66,7 @@ public class SSH {
           break;
         }
         String str = new String(tmp, 0, i);
-        sock_session.getBasicRemote().sendText(str);
+        sb.append(str);
       }
       if (channel.isEOF()) {
         break;
@@ -78,6 +78,7 @@ public class SSH {
     if (session != null) {
       session.disconnect();
     }
+    return sb;
   }
 
   // public static StringBuffer execCommandByShell(javax.websocket.Session
