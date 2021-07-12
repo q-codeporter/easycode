@@ -1,3 +1,13 @@
+## Mybatis
+##### mybatis-generator pagehelper  page 对象二次封装
+org.zhiqiang.lu.easycode.spring.aop.model.mybatis.generator.PageInfo<T>
+##### mybatis-plus BaseController 定义封装
+描述：通用父类<br/>
+org.zhiqiang.lu.easycode.spring.aop.model.mybatis.plus.BaseController<S extends IService<T>, T> <br/>
+描述：使用swagger api 通用父类<br/>
+org.zhiqiang.lu.easycode.spring.aop.model.mybatis.plus.swagger.BaseController<S extends IService<T>, T> <br/>
+
+
 ## SpringBoot全局AOP处理插件
 ### 使用方法：
 springboot项目引入jar后，通过主类名添加@QPlugin注解开启插件功能
