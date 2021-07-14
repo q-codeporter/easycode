@@ -125,6 +125,14 @@ public class data {
     }
   }
 
+  public static BigDecimal to_bigdecimal(Object arg) {
+    try {
+      return new BigDecimal(arg.toString());
+    } catch (Exception e) {
+      return new BigDecimal(0);
+    }
+  }
+
   /**
    * 该方法用于将Object的数据转换为int数据null或者“”的话默认为0，转换失败也为0
    *
