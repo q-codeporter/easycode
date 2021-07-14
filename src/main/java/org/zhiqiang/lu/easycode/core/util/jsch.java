@@ -58,9 +58,6 @@ public class jsch {
     for (String c : commands) {
       new Thread(new Runnable() {
         public void run() {
-          Map<String, Object> res = new HashMap<>();
-          res.put("status", 200);
-          res.put("message", "OK");
           try {
             map.put(c, exec_table(ip, port, username, password, c));
           } catch (Exception e) {
