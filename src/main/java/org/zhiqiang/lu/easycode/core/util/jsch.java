@@ -1,6 +1,10 @@
 package org.zhiqiang.lu.easycode.core.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +14,8 @@ import java.util.concurrent.CountDownLatch;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
@@ -19,10 +25,33 @@ import com.jcraft.jsch.Session;
 
 public class jsch {
 
+  private Session session = null;
+  private Channel channel = null;
+
   public static void main(String[] args) {
+    try {
+      System.out.println(jsch.exec("121.36.61.86", 22, "root", "hitsoft123@", "kubectl top nodes"));
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
-  public static Map<String, List<Map<String, String>>> exec_table(String host, int port, String user, String password,
+  public jsch(String ip, int port, String username, String password, String type) throws Exception {
+    InetAddress.getByName(ip).isReachable(500);
+    java.util.Properties config = new java.util.Properties();
+    config.put("StrictHostKeyChecking", "no");
+    JSch jsch = new JSch();
+    session = jsch.getSession(username, ip, port);
+    session.setPassword(password);
+    session.setConfig(config);
+    session.setTimeout(1000);
+    session.connect();
+    channel = session.openChannel(type);
+    channel.connect();
+  }
+
+  public static Map<String, List<Map<String, String>>> exec_table(String ip, int port, String username, String password,
       String... commands) throws Exception {
     Map<String, List<Map<String, String>>> map = new HashMap<>();
     final CountDownLatch latch = new CountDownLatch(commands.length);
@@ -33,7 +62,7 @@ public class jsch {
           res.put("status", 200);
           res.put("message", "OK");
           try {
-            map.put(c, exec_table(host, port, user, password, c));
+            map.put(c, exec_table(ip, port, username, password, c));
           } catch (Exception e) {
             map.put(c, new ArrayList<Map<String, String>>());
           }
@@ -45,11 +74,11 @@ public class jsch {
     return map;
   }
 
-  public static List<Map<String, String>> exec_table(String host, int port, String user, String password,
+  public static List<Map<String, String>> exec_table(String ip, int port, String username, String password,
       String command) throws Exception {
     List<Map<String, String>> list = new ArrayList<>();
     List<String> results = new ArrayList<>();
-    for (String s : exec(host, port, user, password, command).toString().split("\n")) {
+    for (String s : exec(ip, port, username, password, command).toString().split("\n")) {
       results.add(s);
     }
     String[] titles = results.get(0).toLowerCase().split("\\s{2,}");
@@ -64,13 +93,15 @@ public class jsch {
     return list;
   }
 
-  public static StringBuffer exec(String host, int port, String user, String password, String... commands)
+  public static StringBuffer exec(String ip, int port, String username, String password, String... commands)
       throws Exception {
-    return exec(null, host, port, user, password, commands);
+    return exec(null, ip, port, username, password, commands);
   }
 
-  public static StringBuffer exec(javax.websocket.Session sock_session, String host, int port, String user,
+  public static StringBuffer exec(javax.websocket.Session sock_session, String ip, int port, String username,
       String password, String... commands) throws Exception {
+    InetAddress.getByName(ip).isReachable(500);
+
     StringBuffer sb = new StringBuffer();
     String command = "";
     for (String c : commands) {
@@ -78,11 +109,10 @@ public class jsch {
     }
     command = command.substring(4);
 
-    InetAddress.getByName(host).isReachable(500);
     java.util.Properties config = new java.util.Properties();
     config.put("StrictHostKeyChecking", "no");
     JSch jsch = new JSch();
-    Session session = jsch.getSession(user, host, port);
+    Session session = jsch.getSession(username, ip, port);
     session.setPassword(password);
     session.setConfig(config);
     session.setTimeout(1000);
@@ -114,7 +144,7 @@ public class jsch {
         if (i < 0) {
           break;
         }
-        String str = new String(tmp, 0, i);
+        String str = new String(tmp_error, 0, i);
         sb.append(str);
         if (sock_session != null) {
           sock_session.getBasicRemote().sendText(str);
@@ -123,6 +153,10 @@ public class jsch {
       if (channel.isEOF()) {
         break;
       }
+      // try {
+      // Thread.sleep(100);
+      // } catch (Exception e) {
+      // }
     }
     if (channel != null) {
       channel.disconnect();
@@ -133,59 +167,71 @@ public class jsch {
     return sb;
   }
 
-  // public static StringBuffer execCommandByShell(javax.websocket.Session
-  // sock_session, Session session,
-  // String... commands) throws Exception {
-  // StringBuffer result = new StringBuffer();
-  // ChannelShell channelShell = (ChannelShell) session.openChannel("shell");
-  // InputStream inputStream = channelShell.getInputStream();
-  // // channelShell.setPty(true);
-  // channelShell.connect();
-  // OutputStream outputStream = channelShell.getOutputStream();// 写入该流的数据
-  // 都将发送到远程端
+  public StringBuffer shell(String... commands) throws Exception {
+    return this.shell(null, commands);
+  }
 
-  // // 使用PrintWriter 就是为了使用println 这个方法
-  // // 好处就是不需要每次手动给字符加\n
-  // PrintWriter printWriter = new PrintWriter(outputStream);
-  // for (String c : commands) {
-  // printWriter.println(c);
-  // }
-  // printWriter.flush();// 把缓冲区的数据强行输出
+  public StringBuffer shell(javax.websocket.Session sock_session, String... commands) throws Exception {
+    StringBuffer sb = new StringBuffer();
+    OutputStream outputStream = ((ChannelShell) channel).getOutputStream();// 写入该流的数据
+    // 都将发送到远程端
+    // 使用PrintWriter 就是为了使用println 这个方法
+    // 好处就是不需要每次手动给字符加\n
+    PrintWriter printWriter = new PrintWriter(outputStream);
+    for (String c : commands) {
+      printWriter.println(c);
+    }
+    printWriter.println("exit");
+    printWriter.flush();// 把缓冲区的数据强行输出
+    /**
+     * shell管道本身就是交互模式的。要想停止，有两种方式： 一、人为的发送一个exit命令，告诉程序本次交互结束
+     * 二、使用字节流中的available方法，来获取数据的总大小，然后循环去读。 为了避免阻塞
+     */
+    InputStream inputStream = ((ChannelShell) channel).getInputStream();
+    byte[] tmp = new byte[1024];
+    while (true) {
+      while (inputStream.available() > 0) {
+        int i = inputStream.read(tmp, 0, 1024);
+        if (i < 0) {
+          break;
+        }
+        String str = new String(tmp, 0, i);
+        sb.append(str);
+        if (sock_session != null) {
+          sock_session.getBasicRemote().sendText(str);
+        }
+      }
+      if (channel.isEOF()) {
+        break;
+      }
+      // try {
+      // Thread.sleep(100);
+      // } catch (Exception e) {
+      // }
+    }
+    outputStream.close();
+    inputStream.close();
+    return sb;
+  }
 
-  // /**
-  // * shell管道本身就是交互模式的。要想停止，有两种方式： 一、人为的发送一个exit命令，告诉程序本次交互结束
-  // * 二、使用字节流中的available方法，来获取数据的总大小，然后循环去读。 为了避免阻塞
-  // */
-  // byte[] tmp = new byte[1024];
-  // while (true) {
-  // while (inputStream.available() > 0) {
-  // int i = inputStream.read(tmp, 0, 1024);
-  // if (i < 0) {
-  // break;
-  // }
-  // String str = new String(tmp, 0, i);
-  // str = str.replaceAll("\n\r", "<br/>");
-  // str = str.replaceAll("\b", "");
-  // str = str.replaceAll("\t", "");
-  // str = str.replaceAll("\n", "");
-  // str = str.replaceAll("\f", "");
-  // str = str.replaceAll("\r", "");
-  // System.out.println(str);
-  // sock_session.getBasicRemote().sendText(str);
-  // }
-  // if (channelShell.isEOF()) {
-  // System.out.println("breakbreakbreakbreakbreakbreakbreakbreak");
-  // break;
-  // }
-  // try {
-  // Thread.sleep(100);
-  // } catch (Exception e) {
-  // }
-  // }
-  // outputStream.close();
-  // inputStream.close();
-  // channelShell.disconnect();
-  // session.disconnect();
-  // return result;
-  // }
+  public void close() {
+    System.out.println("---------------------");
+    if (channel != null) {
+      channel.disconnect();
+    }
+    if (session != null) {
+      session.disconnect();
+    }
+  }
+
+  public void uploads(String path_from, String path_to) throws Exception {
+    ((ChannelSftp) channel).put(path_from, path_to, ChannelSftp.OVERWRITE);
+  }
+
+  public String downloads(String path_from, String path_to) throws Exception {
+    File file = new File(path_to);
+    FileOutputStream fieloutput = new FileOutputStream(file);
+    ((ChannelSftp) channel).get(path_from, fieloutput);
+    return file.getName();
+  }
 }
