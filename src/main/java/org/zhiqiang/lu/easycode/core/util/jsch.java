@@ -49,7 +49,7 @@ public class jsch {
       String command) throws Exception {
     List<Map<String, String>> list = new ArrayList<>();
     List<String> results = new ArrayList<>();
-    for (String s : exec(null, host, port, user, password, command).toString().split("\n")) {
+    for (String s : exec(host, port, user, password, command).toString().split("\n")) {
       results.add(s);
     }
     String[] titles = results.get(0).toLowerCase().split("\\s{2,}");
@@ -62,6 +62,11 @@ public class jsch {
       list.add(map);
     }
     return list;
+  }
+
+  public static StringBuffer exec(String host, int port, String user, String password, String... commands)
+      throws Exception {
+    return exec(null, host, port, user, password, commands);
   }
 
   public static StringBuffer exec(javax.websocket.Session sock_session, String host, int port, String user,

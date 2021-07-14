@@ -125,6 +125,12 @@ public class data {
     }
   }
 
+  /**
+   * 该方法用于将Object的数据转换为int数据null或者“”的话默认为0，转换失败也为0
+   *
+   * @param arg 要转换的object类型的参数，建议使用常用类型，如String，等。
+   * @return 返回BigDecimal类型，转化失败不会抛出异常而转换为0
+   */
   public static BigDecimal to_bigdecimal(Object arg) {
     try {
       return new BigDecimal(arg.toString());
