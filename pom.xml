@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.zhiqiang.lu</groupId>
   <artifactId>easycode</artifactId>
-  <version>3.1.4</version>
+  <version>3.1.6</version>
   <dependencies>
     <!-- core -->
     <dependency>
@@ -122,12 +122,23 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </pluginRepository>
+  </pluginRepositories>
   <build>
     <finalName>${project.name}</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>com.github.wvengen</groupId>
@@ -168,17 +179,7 @@
             <!-- 不混淆所有包名，本人测试混淆后WEB项目问题实在太多，毕竟Spring配置中有
                 大量固定写法的包名 -->
             <option>-keeppackagenames</option>
-            <!-- 不路过非公用类文件及成员 -->
-            <option>-dontskipnonpubliclibraryclasses</option>
-            <option>-dontskipnonpubliclibraryclassmembers</option>
-            <!-- 优化时允许访问并修改有修饰符的类和类的成员 -->
-            <option>-allowaccessmodification</option>
-            <!-- 确定统一的混淆类的成员名称来增加混淆 -->
-            <option>-useuniqueclassmembernames</option>
-            <option>-dontusemixedcaseclassnames</option>
-            <option>-dontskipnonpubliclibraryclasses</option>
-            <option>-verbose</option>
-            <option>-ignorewarnings</option>
+            
             <!-- This option will save all original interfaces files (without obfuscate) in all packages.-->
             <option>-keep interface * extends * { *; }</option>
             <!-- This option will save all original defined annotations in all class in all packages.-->

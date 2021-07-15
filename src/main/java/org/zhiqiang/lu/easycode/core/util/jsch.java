@@ -32,7 +32,6 @@ public class jsch {
     try {
       System.out.println(jsch.exec("121.36.61.86", 22, "root", "hitsoft123@", "kubectl top nodes"));
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
