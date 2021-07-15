@@ -37,6 +37,15 @@ public class jsch {
     }
   }
 
+  /**
+   * 构造器
+   *
+   * @param ip       ip地址
+   * @param port     ssh 端口
+   * @param username 远程访问用户名
+   * @param password 远程访问密码
+   * @param type     shell or sftp
+   */
   public jsch(String ip, int port, String username, String password, String type) throws Exception {
     InetAddress.getByName(ip).isReachable(500);
     java.util.Properties config = new java.util.Properties();
@@ -51,6 +60,15 @@ public class jsch {
     channel.connect();
   }
 
+  /**
+   * exec执行多条命令，多线程返回table json，要求命令结果为表格
+   *
+   * @param ip       ip地址
+   * @param port     ssh 端口
+   * @param username 远程访问用户名
+   * @param password 远程访问密码
+   * @param commands 多条命令
+   */
   public static Map<String, List<Map<String, String>>> exec_table(String ip, int port, String username, String password,
       String... commands) throws Exception {
     Map<String, List<Map<String, String>>> map = new HashMap<>();
@@ -71,6 +89,15 @@ public class jsch {
     return map;
   }
 
+  /**
+   * exec执行单条命令，返回table json，要求命令结果为表格
+   *
+   * @param ip       ip地址
+   * @param port     ssh 端口
+   * @param username 远程访问用户名
+   * @param password 远程访问密码
+   * @param command  单条命令
+   */
   public static List<Map<String, String>> exec_table(String ip, int port, String username, String password,
       String command) throws Exception {
     List<Map<String, String>> list = new ArrayList<>();
@@ -90,11 +117,30 @@ public class jsch {
     return list;
   }
 
+  /**
+   * exec执行多条命令，返回结果
+   *
+   * @param ip       ip地址
+   * @param port     ssh 端口
+   * @param username 远程访问用户名
+   * @param password 远程访问密码
+   * @param commands 多条同步可执行命令
+   */
   public static StringBuffer exec(String ip, int port, String username, String password, String... commands)
       throws Exception {
     return exec(null, ip, port, username, password, commands);
   }
 
+  /**
+   * exec执行多条命令，返回结果
+   *
+   * @param sock_session sock_session
+   * @param ip           ip地址
+   * @param port         ssh 端口
+   * @param username     远程访问用户名
+   * @param password     远程访问密码
+   * @param commands     多条同步可执行命令
+   */
   public static StringBuffer exec(javax.websocket.Session sock_session, String ip, int port, String username,
       String password, String... commands) throws Exception {
     InetAddress.getByName(ip).isReachable(500);
@@ -164,10 +210,21 @@ public class jsch {
     return sb;
   }
 
+  /**
+   * shell方式执行多条命令，返回结果
+   *
+   * @param commands 多条同步可执行命令
+   */
   public StringBuffer shell(String... commands) throws Exception {
     return this.shell(null, commands);
   }
 
+  /**
+   * shell方式执行多条命令，返回结果
+   *
+   * @param sock_session sock_session
+   * @param commands     多条同步可执行命令
+   */
   public StringBuffer shell(javax.websocket.Session sock_session, String... commands) throws Exception {
     StringBuffer sb = new StringBuffer();
     OutputStream outputStream = ((ChannelShell) channel).getOutputStream();// 写入该流的数据
@@ -211,8 +268,10 @@ public class jsch {
     return sb;
   }
 
+  /**
+   * 关闭
+   */
   public void close() {
-    System.out.println("---------------------");
     if (channel != null) {
       channel.disconnect();
     }
@@ -221,10 +280,22 @@ public class jsch {
     }
   }
 
+  /**
+   * 远程上传
+   *
+   * @param path_from 上传文件地址，本地地址，包含文件名
+   * @param path_to   上传到服务器的地址，包含文件名
+   */
   public void uploads(String path_from, String path_to) throws Exception {
     ((ChannelSftp) channel).put(path_from, path_to, ChannelSftp.OVERWRITE);
   }
 
+  /**
+   * 远程下载
+   *
+   * @param path_from 下载文件地址，服务器地址，包含文件名
+   * @param path_to   下载到本地的地址，包含文件名
+   */
   public String downloads(String path_from, String path_to) throws Exception {
     File file = new File(path_to);
     FileOutputStream fieloutput = new FileOutputStream(file);
