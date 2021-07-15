@@ -30,7 +30,10 @@ public class jsch {
 
   public static void main(String[] args) {
     try {
-      System.out.println(jsch.exec("121.36.61.86", 22, "root", "hitsoft123@", "kubectl top nodes"));
+      for (int i = 0; i < 50; i++) {
+        System.out.println(i);
+        System.out.println(jsch.exec_table("124.71.236.222", 22, "root", "hitsoft123@", "kubectl top nodes"));
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -46,14 +49,14 @@ public class jsch {
    * @param type     shell or sftp
    */
   public jsch(String ip, int port, String username, String password, String type) throws Exception {
-    InetAddress.getByName(ip).isReachable(500);
+    InetAddress.getByName(ip).isReachable(1000);
     java.util.Properties config = new java.util.Properties();
     config.put("StrictHostKeyChecking", "no");
     JSch jsch = new JSch();
     session = jsch.getSession(username, ip, port);
     session.setPassword(password);
     session.setConfig(config);
-    session.setTimeout(1000);
+    session.setTimeout(10000);
     session.connect();
     channel = session.openChannel(type);
     channel.connect();
@@ -142,7 +145,7 @@ public class jsch {
    */
   public static StringBuffer exec(javax.websocket.Session sock_session, String ip, int port, String username,
       String password, String... commands) throws Exception {
-    InetAddress.getByName(ip).isReachable(500);
+    InetAddress.getByName(ip).isReachable(10000);
 
     StringBuffer sb = new StringBuffer();
     String command = "";
@@ -157,7 +160,7 @@ public class jsch {
     Session session = jsch.getSession(username, ip, port);
     session.setPassword(password);
     session.setConfig(config);
-    session.setTimeout(1000);
+    session.setTimeout(3000);
     session.connect();
 
     Channel channel = session.openChannel("exec");
