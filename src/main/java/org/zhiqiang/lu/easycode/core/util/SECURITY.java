@@ -4,6 +4,7 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
+import org.zhiqiang.lu.easycode.spring.aop.model.LogicException;
 
 public class security {
 
@@ -33,7 +34,9 @@ public class security {
         byte[] b = cipher.doFinal(content.getBytes("utf-8"));
         // 采用base64算法进行转码,避免出现中文乱码
         return Base64.getEncoder().encodeToString(b);
-      } else if ("SM4".equals(method)) {}
+      } else if ("SM4".equals(method)) {} else {
+        throw new LogicException("沒有找到加密方法");
+      }
     } else {
       return "";
     }
@@ -66,7 +69,9 @@ public class security {
         byte[] encryptBytes = Base64.getDecoder().decode(content);
         byte[] decryptBytes = cipher.doFinal(encryptBytes);
         return new String(decryptBytes);
-      } else if ("SM4".equals(method)) {}
+      } else if ("SM4".equals(method)) {} else {
+        throw new LogicException("沒有找到加密方法");
+      }
     } else {
       return "";
     }
