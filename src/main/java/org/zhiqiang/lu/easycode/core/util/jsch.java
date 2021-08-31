@@ -30,10 +30,7 @@ public class jsch {
 
   public static void main(String[] args) {
     try {
-      for (int i = 0; i < 50; i++) {
-        System.out.println(i);
-        System.out.println(jsch.exec_table("124.71.236.222", 22, "root", "hitsoft123@", "kubectl top nodes"));
-      }
+      System.out.println(jsch.exec_table("121.36.61.86", 22, "root", "hitsoft123@", "kubectl get pv --all-namespaces"));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -49,14 +46,14 @@ public class jsch {
    * @param type     shell or sftp
    */
   public jsch(String ip, int port, String username, String password, String type) throws Exception {
-    InetAddress.getByName(ip).isReachable(1000);
+    InetAddress.getByName(ip).isReachable(500);
     java.util.Properties config = new java.util.Properties();
     config.put("StrictHostKeyChecking", "no");
     JSch jsch = new JSch();
     session = jsch.getSession(username, ip, port);
     session.setPassword(password);
     session.setConfig(config);
-    session.setTimeout(10000);
+    // session.setTimeout(10000);
     session.connect();
     channel = session.openChannel(type);
     channel.connect();
@@ -112,7 +109,11 @@ public class jsch {
       String[] ns = results.get(i).toLowerCase().split("\\s{2,}");
       Map<String, String> map = new HashMap<>();
       for (int t = 0; t < titles.length; t++) {
-        map.put(titles[t], ns[t]);
+        if (ns.length > t) {
+          map.put(titles[t], data.to_string(ns[t]));
+        } else {
+          map.put(titles[t], "");
+        }
       }
       list.add(map);
     }
@@ -145,7 +146,7 @@ public class jsch {
    */
   public static StringBuffer exec(javax.websocket.Session sock_session, String ip, int port, String username,
       String password, String... commands) throws Exception {
-    InetAddress.getByName(ip).isReachable(10000);
+    InetAddress.getByName(ip).isReachable(500);
 
     StringBuffer sb = new StringBuffer();
     String command = "";
@@ -160,7 +161,6 @@ public class jsch {
     Session session = jsch.getSession(username, ip, port);
     session.setPassword(password);
     session.setConfig(config);
-    session.setTimeout(3000);
     session.connect();
 
     Channel channel = session.openChannel("exec");
@@ -293,6 +293,19 @@ public class jsch {
   }
 
   /**
+   * 远程上传
+   *
+   * @param path_from 上传文件地址，本地地址，包含文件名
+   * @param path_to   上传到服务器的地址，包含文件名
+   */
+  public static void uploads(String ip, int port, String username, String password, String path_from, String path_to)
+      throws Exception {
+    jsch j = new jsch(ip, port, username, password, "sftp");
+    ((ChannelSftp) j.channel).put(path_from, path_to, ChannelSftp.OVERWRITE);
+    j.close();
+  }
+
+  /**
    * 远程下载
    *
    * @param path_from 下载文件地址，服务器地址，包含文件名
@@ -302,6 +315,22 @@ public class jsch {
     File file = new File(path_to);
     FileOutputStream fieloutput = new FileOutputStream(file);
     ((ChannelSftp) channel).get(path_from, fieloutput);
+    return file.getName();
+  }
+
+  /**
+   * 远程下载
+   *
+   * @param path_from 下载文件地址，服务器地址，包含文件名
+   * @param path_to   下载到本地的地址，包含文件名
+   */
+  public static String downloads(String ip, int port, String username, String password, String path_from,
+      String path_to) throws Exception {
+    jsch j = new jsch(ip, port, username, password, "sftp");
+    File file = new File(path_to);
+    FileOutputStream fieloutput = new FileOutputStream(file);
+    ((ChannelSftp) j.channel).get(path_from, fieloutput);
+    j.close();
     return file.getName();
   }
 }
