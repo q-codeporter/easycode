@@ -130,22 +130,35 @@ public class QAdvice implements WebMvcConfigurer {
     public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, final MethodParameter methodParameter,
         final Type type, final Class<? extends HttpMessageConverter<?>> c) throws DecryptException {
       Security security = null;
-      String method = "", key = "";
+      String key = "", encode = "", algorithm_name = "", algorithm_name_ecb_padding = "";
+      int key_size = 0;
       if (methodParameter.getDeclaringClass().isAnnotationPresent(Security.class)) {
         security = methodParameter.getDeclaringClass().getAnnotation(Security.class);
-        method = security.method();
+        algorithm_name = security.algorithm_name();
         key = security.key();
+        encode = security.encode();
+        algorithm_name = security.algorithm_name();
+        algorithm_name_ecb_padding = security.algorithm_name_ecb_padding();
+        key_size = security.key_size();
       }
 
       if (methodParameter.getMethod().isAnnotationPresent(Security.class)) {
         security = methodParameter.getMethodAnnotation(Security.class);
-        method = security.method();
+        algorithm_name = security.algorithm_name();
         key = security.key();
+        encode = security.encode();
+        algorithm_name = security.algorithm_name();
+        algorithm_name_ecb_padding = security.algorithm_name_ecb_padding();
+        key_size = security.key_size();
       }
 
       // 入参是否需要解密
       if (security != null && security.decrypt()) {
-        inputMessage = new DecryptHttpInputMessage(inputMessage, method, key);
+        org.zhiqiang.lu.easycode.core.util.security.encode = encode;
+        org.zhiqiang.lu.easycode.core.util.security.algorithm_name = algorithm_name;
+        org.zhiqiang.lu.easycode.core.util.security.algorithm_name_ecb_padding = algorithm_name_ecb_padding;
+        org.zhiqiang.lu.easycode.core.util.security.key_size = key_size;
+        inputMessage = new DecryptHttpInputMessage(inputMessage, key);
       }
       return inputMessage;
     }
@@ -161,8 +174,7 @@ public class QAdvice implements WebMvcConfigurer {
 
       private InputStream body;
 
-      public DecryptHttpInputMessage(final HttpInputMessage inputMessage, final String method, final String key)
-          throws DecryptException {
+      public DecryptHttpInputMessage(final HttpInputMessage inputMessage, final String key) throws DecryptException {
         this.headers = inputMessage.getHeaders();
         try {
           final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -170,7 +182,8 @@ public class QAdvice implements WebMvcConfigurer {
           while ((i = inputMessage.getBody().read()) != -1) {
             baos.write(i);
           }
-          this.body = new ByteArrayInputStream(security.decrypt(baos.toString(), method, key).getBytes());
+
+          this.body = new ByteArrayInputStream(security.decrypt(baos.toString(), key).getBytes());
         } catch (final Exception e) {
           throw new DecryptException("密文参数解析失败");
         }
@@ -212,27 +225,35 @@ public class QAdvice implements WebMvcConfigurer {
       message.setPath(serverHttpRequest.getURI().getPath());
 
       Security security = null;
-      String method = "", key = "";
+      String key = "", encode = "", algorithm_name = "", algorithm_name_ecb_padding = "";
+      int key_size = 0;
       if (methodParameter.getDeclaringClass().isAnnotationPresent(Security.class)) {
-        security = methodParameter.getDeclaringClass().getAnnotation(Security.class);
-        method = security.method();
         key = security.key();
+        encode = security.encode();
+        algorithm_name = security.algorithm_name();
+        algorithm_name_ecb_padding = security.algorithm_name_ecb_padding();
+        key_size = security.key_size();
       }
-
       if (methodParameter.getMethod().isAnnotationPresent(Security.class)) {
         security = methodParameter.getMethodAnnotation(Security.class);
-        method = security.method();
         key = security.key();
+        encode = security.encode();
+        algorithm_name = security.algorithm_name();
+        algorithm_name_ecb_padding = security.algorithm_name_ecb_padding();
+        key_size = security.key_size();
       }
 
       // 出参是否需要加密
       if (security != null && security.encrypt()) {
         try {
+          org.zhiqiang.lu.easycode.core.util.security.encode = encode;
+          org.zhiqiang.lu.easycode.core.util.security.algorithm_name = algorithm_name;
+          org.zhiqiang.lu.easycode.core.util.security.algorithm_name_ecb_padding = algorithm_name_ecb_padding;
+          org.zhiqiang.lu.easycode.core.util.security.key_size = key_size;
           if ("java.lang.String".equals(body.getClass().getName())) {
-            body = org.zhiqiang.lu.easycode.core.util.security.encrypt((String) body, method, key);
+            body = org.zhiqiang.lu.easycode.core.util.security.encrypt((String) body, key);
           } else {
-
-            body = org.zhiqiang.lu.easycode.core.util.security.encrypt(gson.toJson(body), method, key);
+            body = org.zhiqiang.lu.easycode.core.util.security.encrypt(gson.toJson(body), key);
           }
           message.setEncryption(true);
         } catch (final Exception e) {

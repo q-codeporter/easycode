@@ -52,8 +52,6 @@
       <version>5.2.0</version>
       <optional>true</optional>
     </dependency>
-    <!-- poi -->
-    <!-- office -->
     <dependency>
       <groupId>org.zhiqiang.lu</groupId>
       <artifactId>aspose-words</artifactId>
@@ -100,6 +98,13 @@
       <optional>true</optional>
     </dependency>
     <!-- swagger2-end-->
+    <!-- sm4 -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.69</version>
+    </dependency>
+    <!-- sm4 -->
     <!-- jar 混淆 -start-->
     <dependency>
       <groupId>net.sf.proguard</groupId>
