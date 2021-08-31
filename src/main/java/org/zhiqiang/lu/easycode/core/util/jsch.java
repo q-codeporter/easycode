@@ -1,5 +1,11 @@
 package org.zhiqiang.lu.easycode.core.util;
 
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelShell;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -12,13 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.ChannelShell;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
-
 /**
  * Created by riot94 on 1/6/2017.
  */
@@ -30,7 +29,15 @@ public class jsch {
 
   public static void main(String[] args) {
     try {
-      System.out.println(jsch.exec_table("121.36.61.86", 22, "root", "hitsoft123@", "kubectl get pv --all-namespaces"));
+      System.out.println(
+        jsch.exec_table(
+          "121.36.61.86",
+          22,
+          "root",
+          "hitsoft123@",
+          "kubectl get pv --all-namespaces"
+        )
+      );
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -45,7 +52,14 @@ public class jsch {
    * @param password 远程访问密码
    * @param type     shell or sftp
    */
-  public jsch(String ip, int port, String username, String password, String type) throws Exception {
+  public jsch(
+    String ip,
+    int port,
+    String username,
+    String password,
+    String type
+  )
+    throws Exception {
     InetAddress.getByName(ip).isReachable(500);
     java.util.Properties config = new java.util.Properties();
     config.put("StrictHostKeyChecking", "no");
@@ -68,21 +82,30 @@ public class jsch {
    * @param password 远程访问密码
    * @param commands 多条命令
    */
-  public static Map<String, List<Map<String, String>>> exec_table(String ip, int port, String username, String password,
-      String... commands) throws Exception {
+  public static Map<String, List<Map<String, String>>> exec_table(
+    String ip,
+    int port,
+    String username,
+    String password,
+    String... commands
+  )
+    throws Exception {
     Map<String, List<Map<String, String>>> map = new HashMap<>();
     final CountDownLatch latch = new CountDownLatch(commands.length);
     for (String c : commands) {
-      new Thread(new Runnable() {
-        public void run() {
-          try {
-            map.put(c, exec_table(ip, port, username, password, c));
-          } catch (Exception e) {
-            map.put(c, new ArrayList<Map<String, String>>());
+      new Thread(
+        new Runnable() {
+          public void run() {
+            try {
+              map.put(c, exec_table(ip, port, username, password, c));
+            } catch (Exception e) {
+              map.put(c, new ArrayList<Map<String, String>>());
+            }
+            latch.countDown();
           }
-          latch.countDown();
         }
-      }).start();
+      )
+        .start();
     }
     latch.await();
     return map;
@@ -97,11 +120,19 @@ public class jsch {
    * @param password 远程访问密码
    * @param command  单条命令
    */
-  public static List<Map<String, String>> exec_table(String ip, int port, String username, String password,
-      String command) throws Exception {
+  public static List<Map<String, String>> exec_table(
+    String ip,
+    int port,
+    String username,
+    String password,
+    String command
+  )
+    throws Exception {
     List<Map<String, String>> list = new ArrayList<>();
     List<String> results = new ArrayList<>();
-    for (String s : exec(ip, port, username, password, command).toString().split("\n")) {
+    for (String s : exec(ip, port, username, password, command)
+      .toString()
+      .split("\n")) {
       results.add(s);
     }
     String[] titles = results.get(0).toLowerCase().split("\\s{2,}");
@@ -129,8 +160,14 @@ public class jsch {
    * @param password 远程访问密码
    * @param commands 多条同步可执行命令
    */
-  public static StringBuffer exec(String ip, int port, String username, String password, String... commands)
-      throws Exception {
+  public static StringBuffer exec(
+    String ip,
+    int port,
+    String username,
+    String password,
+    String... commands
+  )
+    throws Exception {
     return exec(null, ip, port, username, password, commands);
   }
 
@@ -144,8 +181,15 @@ public class jsch {
    * @param password     远程访问密码
    * @param commands     多条同步可执行命令
    */
-  public static StringBuffer exec(javax.websocket.Session sock_session, String ip, int port, String username,
-      String password, String... commands) throws Exception {
+  public static StringBuffer exec(
+    javax.websocket.Session sock_session,
+    String ip,
+    int port,
+    String username,
+    String password,
+    String... commands
+  )
+    throws Exception {
     InetAddress.getByName(ip).isReachable(500);
 
     StringBuffer sb = new StringBuffer();
@@ -227,9 +271,13 @@ public class jsch {
    * @param sock_session sock_session
    * @param commands     多条同步可执行命令
    */
-  public StringBuffer shell(javax.websocket.Session sock_session, String... commands) throws Exception {
+  public StringBuffer shell(
+    javax.websocket.Session sock_session,
+    String... commands
+  )
+    throws Exception {
     StringBuffer sb = new StringBuffer();
-    OutputStream outputStream = ((ChannelShell) channel).getOutputStream();// 写入该流的数据
+    OutputStream outputStream = ((ChannelShell) channel).getOutputStream(); // 写入该流的数据
     // 都将发送到远程端
     // 使用PrintWriter 就是为了使用println 这个方法
     // 好处就是不需要每次手动给字符加\n
@@ -238,7 +286,7 @@ public class jsch {
       printWriter.println(c);
     }
     printWriter.println("exit");
-    printWriter.flush();// 把缓冲区的数据强行输出
+    printWriter.flush(); // 把缓冲区的数据强行输出
     /**
      * shell管道本身就是交互模式的。要想停止，有两种方式： 一、人为的发送一个exit命令，告诉程序本次交互结束
      * 二、使用字节流中的available方法，来获取数据的总大小，然后循环去读。 为了避免阻塞
@@ -298,8 +346,15 @@ public class jsch {
    * @param path_from 上传文件地址，本地地址，包含文件名
    * @param path_to   上传到服务器的地址，包含文件名
    */
-  public static void uploads(String ip, int port, String username, String password, String path_from, String path_to)
-      throws Exception {
+  public static void uploads(
+    String ip,
+    int port,
+    String username,
+    String password,
+    String path_from,
+    String path_to
+  )
+    throws Exception {
     jsch j = new jsch(ip, port, username, password, "sftp");
     ((ChannelSftp) j.channel).put(path_from, path_to, ChannelSftp.OVERWRITE);
     j.close();
@@ -324,8 +379,15 @@ public class jsch {
    * @param path_from 下载文件地址，服务器地址，包含文件名
    * @param path_to   下载到本地的地址，包含文件名
    */
-  public static String downloads(String ip, int port, String username, String password, String path_from,
-      String path_to) throws Exception {
+  public static String downloads(
+    String ip,
+    int port,
+    String username,
+    String password,
+    String path_from,
+    String path_to
+  )
+    throws Exception {
     jsch j = new jsch(ip, port, username, password, "sftp");
     File file = new File(path_to);
     FileOutputStream fieloutput = new FileOutputStream(file);
