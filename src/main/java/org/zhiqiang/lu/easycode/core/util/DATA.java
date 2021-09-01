@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -195,11 +196,11 @@ public class data {
       BigDecimal bd = new BigDecimal(to_string(num));
       BigDecimal bd1;
       if (lb == 0) {
-        bd1 = bd.setScale(ws, BigDecimal.ROUND_HALF_UP);
+        bd1 = bd.setScale(ws, RoundingMode.HALF_UP);
       } else if (lb == 1) {
-        bd1 = bd.setScale(ws, BigDecimal.ROUND_DOWN);
+        bd1 = bd.setScale(ws, RoundingMode.DOWN);
       } else {
-        bd1 = bd.setScale(ws, BigDecimal.ROUND_UP);
+        bd1 = bd.setScale(ws, RoundingMode.UP);
       }
       double p = bd1.doubleValue();
       return p;
