@@ -35,7 +35,6 @@ springboot项目引入jar后，通过主类名添加@QPlugin注解开启插件�
 @Security(method="AES", key = "\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*",encrypt = true,decrypt = true)<br/>
 <br/>
 默认值<br/>
-method="AES" AES算法<br/>
 key = "\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*" 密钥<br/>
 encode = "UTF-8" 编码方式<br/>
 algorithm_name = "AES" 算法名称<br/>
