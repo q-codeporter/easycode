@@ -164,12 +164,8 @@ public class QAdvice implements WebMvcConfigurer {
           while ((i = inputMessage.getBody().read()) != -1) {
             baos.write(i);
           }
-          org.zhiqiang.lu.easycode.core.util.security.encode = security.encode();
-          org.zhiqiang.lu.easycode.core.util.security.algorithm_name = security.algorithm_name();
-          org.zhiqiang.lu.easycode.core.util.security.algorithm_name_ecb_padding = security
-              .algorithm_name_ecb_padding();
-          org.zhiqiang.lu.easycode.core.util.security.key_size = security.key_size();
-          byte[] b = org.zhiqiang.lu.easycode.core.util.security.decrypt(baos.toString(), security.key()).getBytes();
+          byte[] b = org.zhiqiang.lu.easycode.core.util.security.decrypt(baos.toString(), security.key(),
+              security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode()).getBytes();
           this.body = new ByteArrayInputStream(b);
         } catch (final Exception e) {
           throw new DecryptException("密文参数解析失败");
@@ -221,15 +217,12 @@ public class QAdvice implements WebMvcConfigurer {
       // 出参是否需要加密
       if (security != null && security.encrypt()) {
         try {
-          org.zhiqiang.lu.easycode.core.util.security.encode = security.encode();
-          org.zhiqiang.lu.easycode.core.util.security.algorithm_name = security.algorithm_name();
-          org.zhiqiang.lu.easycode.core.util.security.algorithm_name_ecb_padding = security
-              .algorithm_name_ecb_padding();
-          org.zhiqiang.lu.easycode.core.util.security.key_size = security.key_size();
           if ("java.lang.String".equals(body.getClass().getName())) {
-            body = org.zhiqiang.lu.easycode.core.util.security.encrypt((String) body, security.key());
+            body = org.zhiqiang.lu.easycode.core.util.security.encrypt((String) body, security.key(),
+                security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode());
           } else {
-            body = org.zhiqiang.lu.easycode.core.util.security.encrypt(gson.toJson(body), security.key());
+            body = org.zhiqiang.lu.easycode.core.util.security.encrypt(gson.toJson(body), security.key(),
+                security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode());
           }
           message.setEncryption(true);
         } catch (final Exception e) {

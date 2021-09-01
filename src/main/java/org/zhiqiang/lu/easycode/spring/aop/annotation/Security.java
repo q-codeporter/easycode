@@ -20,8 +20,6 @@ public @interface Security {
 
   String algorithm_name_ecb_padding() default "AES/ECB/PKCS5Padding";
 
-  int key_size() default 128;
-
   /**
    * 入参是否解密，默认解密
    */
