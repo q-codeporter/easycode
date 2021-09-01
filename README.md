@@ -37,6 +37,9 @@ springboot项目引入jar后，通过主类名添加@QPlugin注解开启插件�
 默认值<br/>
 method="AES" AES算法<br/>
 key = "\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*" 密钥<br/>
+encode = "UTF-8" 编码方式<br/>
+algorithm_name = "AES" 算法名称<br/>
+algorithm_name_ecb_padding = "AES/ECB/PKCS5Padding" 算法ecb padding<br/>
 decrypt = true 开启解密，参数密文<br/>
 encrypt = true 开启加密，返回密文<br/>
 <br/>
