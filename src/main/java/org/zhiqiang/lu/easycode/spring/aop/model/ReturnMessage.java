@@ -9,13 +9,13 @@ public class ReturnMessage {
     private String message;
     private String path;
     private Object data;
-    private Boolean encryption = false;
+    private Boolean encrypted = false;
 
     public ReturnMessage() {
         this.status = 200;
         this.timestamp = new Date();
         this.message = "OK";
-        this.encryption = false;
+        this.encrypted = false;
     }
 
     public int getStatus() {
@@ -66,11 +66,11 @@ public class ReturnMessage {
         this.data = data;
     }
 
-    public Boolean getEncryption() {
-        return encryption;
+    public Boolean getEncrypted() {
+      return encrypted;
     }
 
-    public void setEncryption(Boolean encryption) {
-        this.encryption = encryption;
+    public void setEncrypted(Boolean encrypted) {
+      this.encrypted = encrypted;
     }
 }

@@ -224,7 +224,7 @@ public class QAdvice implements WebMvcConfigurer {
             body = org.zhiqiang.lu.easycode.core.util.security.encrypt(gson.toJson(body), security.key(),
                 security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode());
           }
-          message.setEncryption(true);
+          message.setEncrypted(true);
         } catch (final Exception e) {
           e.printStackTrace();
         }

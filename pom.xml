@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.zhiqiang.lu</groupId>
   <artifactId>easycode</artifactId>
-  <version>3.2.5</version>
+  <version>3.2.7</version>
   <dependencies>
     <!-- core -->
     <dependency>
@@ -112,6 +112,7 @@
   </distributionManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   <pluginRepositories>
     <pluginRepository>
@@ -129,6 +130,7 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
     </plugins>
