@@ -20,6 +20,8 @@ public @interface Security {
 
   String algorithm_name_ecb_padding() default "AES/ECB/PKCS5Padding";
 
+  String output() default "HEX";
+
   /**
    * 入参是否解密，默认解密
    */

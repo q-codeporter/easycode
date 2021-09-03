@@ -165,7 +165,8 @@ public class QAdvice implements WebMvcConfigurer {
             baos.write(i);
           }
           byte[] b = org.zhiqiang.lu.easycode.core.util.security.decrypt(baos.toString(), security.key(),
-              security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode()).getBytes();
+              security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode(), security.output())
+              .getBytes();
           this.body = new ByteArrayInputStream(b);
         } catch (final Exception e) {
           throw new DecryptException("密文参数解析失败");
@@ -219,10 +220,10 @@ public class QAdvice implements WebMvcConfigurer {
         try {
           if ("java.lang.String".equals(body.getClass().getName())) {
             body = org.zhiqiang.lu.easycode.core.util.security.encrypt((String) body, security.key(),
-                security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode());
+                security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode(), security.output());
           } else {
             body = org.zhiqiang.lu.easycode.core.util.security.encrypt(gson.toJson(body), security.key(),
-                security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode());
+                security.algorithm_name(), security.algorithm_name_ecb_padding(), security.encode(), security.output());
           }
           message.setEncrypted(true);
         } catch (final Exception e) {
