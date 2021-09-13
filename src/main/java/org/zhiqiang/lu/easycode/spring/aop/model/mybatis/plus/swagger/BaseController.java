@@ -11,8 +11,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -31,25 +34,37 @@ public class BaseController<S extends IService<T>, T> {
     return this.service;
   }
 
-  @PostMapping("/save")
+  @PostMapping("/base")
   @ApiOperation(value = "保存", notes = "公用方法")
   public boolean save(@ApiParam(value = "实体数据", required = true) @RequestBody T entity) {
     return service.save(entity);
   }
 
-  @PostMapping("/save_or_update")
-  @ApiOperation(value = "保存或更新", notes = "公用方法")
-  public boolean saveOrUpdate(@ApiParam(value = "实体数据", required = true) @RequestBody T entity) {
-    return service.saveOrUpdate(entity);
+  @DeleteMapping("/base/{id}")
+  @ApiOperation(value = "通过主键删除", notes = "公用方法")
+  public boolean removeById(@ApiParam(value = "主键", required = true) @PathVariable String id) {
+    return service.removeById(id);
   }
 
-  @PostMapping("/update_by_id")
+  @PutMapping("/base")
   @ApiOperation(value = "通过主键更新", notes = "公用方法")
   public boolean updateById(@ApiParam(value = "实体数据", required = true) @RequestBody T entity) {
     return service.updateById(entity);
   }
 
-  @PostMapping("/update_by_criterias")
+  @GetMapping("/base")
+  @ApiOperation(value = "通过主键查询", notes = "公用方法")
+  public T getById(@ApiParam(value = "主键", required = true) @RequestParam String id) {
+    return service.getById(id);
+  }
+
+  @PutMapping("/base/save_or_update")
+  @ApiOperation(value = "保存或更新", notes = "公用方法")
+  public boolean saveOrUpdate(@ApiParam(value = "实体数据", required = true) @RequestBody T entity) {
+    return service.saveOrUpdate(entity);
+  }
+
+  @PutMapping("/base/update_by_criterias")
   @ApiOperation(value = "通过条件更新", notes = "公用方法")
   public boolean updateByCriterias(
       @ApiParam(value = "实体数据", required = true) @RequestBody MybatisPlusEntity.ObjectEntity<T> object) {
@@ -60,19 +75,13 @@ public class BaseController<S extends IService<T>, T> {
     return service.update(object.getEntity(), queryWrapper);
   }
 
-  @PostMapping("/remove_by_id")
-  @ApiOperation(value = "通过主键删除", notes = "公用方法")
-  public boolean removeById(@ApiParam(value = "主键", required = true) @RequestParam String id) {
-    return service.removeById(id);
-  }
-
-  @PostMapping("/remove_by_ids")
+  @DeleteMapping("/base/remove_by_ids")
   @ApiOperation(value = "通过多主键删除", notes = "公用方法")
   public boolean removeByIds(@ApiParam(value = "主键集合", required = true) @RequestBody List<String> ids) {
     return service.removeByIds(ids);
   }
 
-  @PostMapping("/remove_by_criterias")
+  @DeleteMapping("/base/remove_by_criterias")
   @ApiOperation(value = "通过条件删除", notes = "公用方法")
   public boolean removeByCriterias(
       @ApiParam(value = "查询条件") @RequestBody(required = false) List<MybatisPlusEntity.CriteriaEntity> criterias) {
@@ -83,13 +92,7 @@ public class BaseController<S extends IService<T>, T> {
     return service.remove(queryWrapper);
   }
 
-  @GetMapping("/get_by_id")
-  @ApiOperation(value = "通过主键查询", notes = "公用方法")
-  public T getById(@ApiParam(value = "主键", required = true) @RequestParam String id) {
-    return service.getById(id);
-  }
-
-  @PostMapping("/get_one_by_criterias")
+  @PostMapping("/base/get_one_by_criterias")
   @ApiOperation(value = "通过条件返回一条信息", notes = "公用方法")
   public T getOneByCriterias(
       @ApiParam(value = "查询条件") @RequestBody(required = false) List<MybatisPlusEntity.CriteriaEntity> criterias) {
@@ -102,13 +105,13 @@ public class BaseController<S extends IService<T>, T> {
     return service.getOne(queryWrapper);
   }
 
-  @GetMapping("/list")
+  @GetMapping("/base/list")
   @ApiOperation(value = "查询全部信息", notes = "公用方法")
   public List<T> list() {
     return service.list();
   }
 
-  @PostMapping("/list_extend")
+  @PostMapping("/base/list_extend")
   @ApiOperation(value = "查询全部信息_扩展", notes = "公用方法")
   public List<T> listExtend(
       @ApiParam(value = "查询条件数据") @RequestBody(required = false) MybatisPlusEntity.ListEntity list) {
@@ -130,7 +133,7 @@ public class BaseController<S extends IService<T>, T> {
     return service.list(queryWrapper);
   }
 
-  @GetMapping("/page")
+  @GetMapping("/base/page")
   @ApiOperation(value = "查询分页信息", notes = "公用方法")
   public Page<T> page(@ApiParam(value = "页码", required = true) @RequestParam Integer current,
       @ApiParam(value = "数量", required = true) @RequestParam Integer size) {
@@ -138,7 +141,7 @@ public class BaseController<S extends IService<T>, T> {
     return service.page(page);
   }
 
-  @PostMapping("/page_extend")
+  @PostMapping("/base/page_extend")
   @ApiOperation(value = "查询分页信息扩展", notes = "公用方法")
   public Page<T> pageExtend(
       @ApiParam(value = "查询分页条件数据", required = true) @RequestBody MybatisPlusEntity.PageEntity page) {

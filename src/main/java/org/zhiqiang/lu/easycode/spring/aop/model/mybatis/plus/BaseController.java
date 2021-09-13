@@ -8,8 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,22 +31,32 @@ public class BaseController<S extends IService<T>, T> {
     return this.service;
   }
 
-  @PostMapping("/save")
+  @PostMapping("/base")
   public boolean save(@RequestBody T entity) {
     return service.save(entity);
   }
 
-  @PostMapping("/save_or_update")
+  @DeleteMapping("/base/{id}")
+  public boolean removeById(@PathVariable String id) {
+    return service.removeById(id);
+  }
+
+  @PutMapping("/base")
+  public boolean update(@RequestBody T entity) {
+    return service.updateById(entity);
+  }
+
+  @GetMapping("/base")
+  public T get(@RequestParam String id) {
+    return service.getById(id);
+  }
+
+  @PutMapping("/base/save_or_update")
   public boolean saveOrUpdate(@RequestBody T entity) {
     return service.saveOrUpdate(entity);
   }
 
-  @PostMapping("/update_by_id")
-  public boolean updateById(@RequestBody T entity) {
-    return service.updateById(entity);
-  }
-
-  @PostMapping("/update_by_criterias")
+  @PutMapping("/base/update_by_criterias")
   public boolean updateByCriterias(@RequestBody MybatisPlusEntity.ObjectEntity<T> object) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     for (MybatisPlusEntity.CriteriaEntity criteria : object.getCriterias()) {
@@ -52,17 +65,12 @@ public class BaseController<S extends IService<T>, T> {
     return service.update(object.getEntity(), queryWrapper);
   }
 
-  @PostMapping("/remove_by_id")
-  public boolean removeById(@RequestParam String id) {
-    return service.removeById(id);
-  }
-
-  @PostMapping("/remove_by_ids")
+  @DeleteMapping("/base/remove_by_ids")
   public boolean removeByIds(@RequestBody List<String> ids) {
     return service.removeByIds(ids);
   }
 
-  @PostMapping("/remove_by_criterias")
+  @DeleteMapping("/base/remove_by_criterias")
   public boolean removeByCriterias(List<MybatisPlusEntity.CriteriaEntity> criterias) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     for (MybatisPlusEntity.CriteriaEntity criteria : criterias) {
@@ -71,12 +79,7 @@ public class BaseController<S extends IService<T>, T> {
     return service.remove(queryWrapper);
   }
 
-  @GetMapping("/get_by_id")
-  public T getById(@RequestParam String id) {
-    return service.getById(id);
-  }
-
-  @PostMapping("/get_one_by_criterias")
+  @PostMapping("/base/get_one_by_criterias")
   public T getOneByCriterias(List<MybatisPlusEntity.CriteriaEntity> criterias) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     if (criterias != null) {
@@ -87,12 +90,12 @@ public class BaseController<S extends IService<T>, T> {
     return service.getOne(queryWrapper);
   }
 
-  @GetMapping("/list")
+  @GetMapping("/base/list")
   public List<T> list() {
     return service.list();
   }
 
-  @PostMapping("/list_extend")
+  @PostMapping("/base/list_extend")
   public List<T> listExtend(MybatisPlusEntity.ListEntity list) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     if (list != null) {
@@ -112,13 +115,13 @@ public class BaseController<S extends IService<T>, T> {
     return service.list(queryWrapper);
   }
 
-  @GetMapping("/page")
+  @GetMapping("/base/page")
   public Page<T> page(@RequestParam Integer current, @RequestParam Integer size) {
     Page<T> page = new Page<T>(current, size);
     return service.page(page);
   }
 
-  @PostMapping("/page_extend")
+  @PostMapping("/base/page_extend")
   public Page<T> pageExtend(@RequestBody MybatisPlusEntity.PageEntity page) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     Page<T> p = new Page<T>(page.getCurrent(), page.getSize());
