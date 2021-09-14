@@ -93,7 +93,7 @@ public class BaseController<S extends IService<T>, T> {
   }
 
   @PostMapping("/base/get_one_by_criterias")
-  @ApiOperation(value = "查询-通过条件", notes = "公用方法", position = 32)
+  @ApiOperation(value = "查询-一条数据", notes = "公用方法", position = 32)
   public T getOneByCriterias(
       @ApiParam(value = "查询条件") @RequestBody(required = false) List<MybatisPlusEntity.CriteriaEntity> criterias) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
@@ -105,14 +105,8 @@ public class BaseController<S extends IService<T>, T> {
     return service.getOne(queryWrapper);
   }
 
-  @GetMapping("/base/list")
-  @ApiOperation(value = "查询-全部信息", notes = "公用方法", position = 33)
-  public List<T> list() {
-    return service.list();
-  }
-
-  @PostMapping("/base/list_extend")
-  @ApiOperation(value = "查询-通过条件", notes = "公用方法", position = 34)
+  @PostMapping("/base/list")
+  @ApiOperation(value = "查询-多条数据", notes = "公用方法", position = 33)
   public List<T> listExtend(
       @ApiParam(value = "查询条件数据") @RequestBody(required = false) MybatisPlusEntity.ListEntity list) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
@@ -133,16 +127,8 @@ public class BaseController<S extends IService<T>, T> {
     return service.list(queryWrapper);
   }
 
-  @GetMapping("/base/page")
-  @ApiOperation(value = "查询-分页", notes = "公用方法", position = 35)
-  public Page<T> page(@ApiParam(value = "页码", required = true) @RequestParam Integer current,
-      @ApiParam(value = "数量", required = true) @RequestParam Integer size) {
-    Page<T> page = new Page<T>(current, size);
-    return service.page(page);
-  }
-
-  @PostMapping("/base/page_extend")
-  @ApiOperation(value = "查询-分页-通过调节", notes = "公用方法", position = 36)
+  @PostMapping("/base/page")
+  @ApiOperation(value = "查询-分页", notes = "公用方法", position = 34)
   public Page<T> pageExtend(
       @ApiParam(value = "查询分页条件数据", required = true) @RequestBody MybatisPlusEntity.PageEntity page) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
