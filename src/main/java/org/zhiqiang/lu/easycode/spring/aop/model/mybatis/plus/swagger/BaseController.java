@@ -86,9 +86,9 @@ public class BaseController<S extends IService<T>, T> {
     return service.remove(queryWrapper);
   }
 
-  @GetMapping("/base")
+  @GetMapping("/base/{id}")
   @ApiOperation(value = "查询", notes = "公用方法", position = 31)
-  public T getById(@ApiParam(value = "主键", required = true) @RequestParam String id) {
+  public T getById(@ApiParam(value = "主键", required = true) @PathVariable String id) {
     return service.getById(id);
   }
 
