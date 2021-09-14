@@ -52,7 +52,7 @@ public class BaseController<S extends IService<T>, T> {
     return service.updateById(entity);
   }
 
-  @PutMapping("/base/update_by_criterias")
+  @PutMapping("/base/criteria")
   @ApiOperation(value = "更新-通过条件", notes = "公用方法", position = 12)
   public boolean updateByCriterias(
       @ApiParam(value = "实体数据", required = true) @RequestBody MybatisPlusEntity.ObjectEntity<T> object) {
@@ -69,13 +69,13 @@ public class BaseController<S extends IService<T>, T> {
     return service.removeById(id);
   }
 
-  @DeleteMapping("/base/remove_by_ids")
+  @DeleteMapping("/base/ids")
   @ApiOperation(value = "删除-通过多主键", notes = "公用方法", position = 22)
   public boolean removeByIds(@ApiParam(value = "主键集合", required = true) @RequestBody List<String> ids) {
     return service.removeByIds(ids);
   }
 
-  @DeleteMapping("/base/remove_by_criterias")
+  @DeleteMapping("/base/criteria")
   @ApiOperation(value = "删除-通过条件", notes = "公用方法", position = 23)
   public boolean removeByCriterias(
       @ApiParam(value = "查询条件") @RequestBody(required = false) List<MybatisPlusEntity.CriteriaEntity> criterias) {
@@ -92,7 +92,7 @@ public class BaseController<S extends IService<T>, T> {
     return service.getById(id);
   }
 
-  @PostMapping("/base/get_one_by_criterias")
+  @PostMapping("/base/one")
   @ApiOperation(value = "查询-一条数据", notes = "公用方法", position = 32)
   public T getOneByCriterias(
       @ApiParam(value = "查询条件") @RequestBody(required = false) List<MybatisPlusEntity.CriteriaEntity> criterias) {
