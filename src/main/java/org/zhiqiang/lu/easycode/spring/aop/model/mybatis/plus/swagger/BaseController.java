@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @Author Q
@@ -55,7 +54,7 @@ public class BaseController<S extends IService<T>, T> {
   @PutMapping("/base/criteria")
   @ApiOperation(value = "更新-通过条件", notes = "公用方法", position = 12)
   public boolean updateByCriterias(
-      @ApiParam(value = "实体数据", required = true) @RequestBody MybatisPlusEntity.ObjectEntity<T> object) {
+      @ApiParam(value = "实体数据、查询条件", required = true) @RequestBody MybatisPlusEntity.ObjectEntity<T> object) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     for (MybatisPlusEntity.CriteriaEntity criteria : object.getCriterias()) {
       queryWrapper(queryWrapper, criteria);
@@ -92,29 +91,62 @@ public class BaseController<S extends IService<T>, T> {
     return service.getById(id);
   }
 
+  @PostMapping("/base/{current}/{size}")
+  @ApiOperation(value = "查询-分页", notes = "公用方法", position = 32)
+  public Page<T> pageExtend(@ApiParam(value = "当前页码", required = true) @PathVariable int current,
+      @ApiParam(value = "每页数量", required = true) @PathVariable int size,
+      @ApiParam(value = "查询条件") @RequestBody(required = false) MybatisPlusEntity.ListEntity criterias) {
+    QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
+    Page<T> p = new Page<T>(current, size);
+    if (criterias != null) {
+      for (MybatisPlusEntity.CriteriaEntity criteria : criterias.getCriterias()) {
+        queryWrapper(queryWrapper, criteria);
+      }
+      for (OrderItem io : criterias.getOrderItems()) {
+        if (StringUtils.isNotBlank(io.getColumn())) {
+          if (io.isAsc()) {
+            queryWrapper.orderByAsc(io.getColumn());
+          } else {
+            queryWrapper.orderByDesc(io.getColumn());
+          }
+        }
+      }
+    }
+    return service.page(p, queryWrapper);
+  }
+
   @PostMapping("/base/one")
-  @ApiOperation(value = "查询-一条数据", notes = "公用方法", position = 32)
+  @ApiOperation(value = "查询-一条数据", notes = "公用方法", position = 33)
   public T getOneByCriterias(
-      @ApiParam(value = "查询条件") @RequestBody(required = false) List<MybatisPlusEntity.CriteriaEntity> criterias) {
+      @ApiParam(value = "查询条件") @RequestBody(required = false) MybatisPlusEntity.ListEntity criterias) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
     if (criterias != null) {
-      for (MybatisPlusEntity.CriteriaEntity criteria : criterias) {
+      for (MybatisPlusEntity.CriteriaEntity criteria : criterias.getCriterias()) {
         queryWrapper(queryWrapper, criteria);
+      }
+      for (OrderItem io : criterias.getOrderItems()) {
+        if (StringUtils.isNotBlank(io.getColumn())) {
+          if (io.isAsc()) {
+            queryWrapper.orderByAsc(io.getColumn());
+          } else {
+            queryWrapper.orderByDesc(io.getColumn());
+          }
+        }
       }
     }
     return service.getOne(queryWrapper);
   }
 
   @PostMapping("/base/list")
-  @ApiOperation(value = "查询-多条数据", notes = "公用方法", position = 33)
+  @ApiOperation(value = "查询-多条数据", notes = "公用方法", position = 34)
   public List<T> listExtend(
-      @ApiParam(value = "查询条件数据") @RequestBody(required = false) MybatisPlusEntity.ListEntity list) {
+      @ApiParam(value = "查询条件") @RequestBody(required = false) MybatisPlusEntity.ListEntity criterias) {
     QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
-    if (list != null) {
-      for (MybatisPlusEntity.CriteriaEntity criteria : list.getCriterias()) {
+    if (criterias != null) {
+      for (MybatisPlusEntity.CriteriaEntity criteria : criterias.getCriterias()) {
         queryWrapper(queryWrapper, criteria);
       }
-      for (OrderItem io : list.getOrderItems()) {
+      for (OrderItem io : criterias.getOrderItems()) {
         if (StringUtils.isNotBlank(io.getColumn())) {
           if (io.isAsc()) {
             queryWrapper.orderByAsc(io.getColumn());
@@ -125,19 +157,6 @@ public class BaseController<S extends IService<T>, T> {
       }
     }
     return service.list(queryWrapper);
-  }
-
-  @PostMapping("/base/page")
-  @ApiOperation(value = "查询-分页", notes = "公用方法", position = 34)
-  public Page<T> pageExtend(
-      @ApiParam(value = "查询分页条件数据", required = true) @RequestBody MybatisPlusEntity.PageEntity page) {
-    QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
-    Page<T> p = new Page<T>(page.getCurrent(), page.getSize());
-    p.setOrders(page.getOrderItems());
-    for (MybatisPlusEntity.CriteriaEntity criteria : page.getCriterias()) {
-      queryWrapper(queryWrapper, criteria);
-    }
-    return service.page(p, queryWrapper);
   }
 
   private void queryWrapper(QueryWrapper<T> queryWrapper, MybatisPlusEntity.CriteriaEntity criteria) {
