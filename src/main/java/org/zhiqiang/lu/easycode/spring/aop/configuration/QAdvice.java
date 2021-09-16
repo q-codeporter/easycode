@@ -203,7 +203,12 @@ public class QAdvice implements WebMvcConfigurer {
     public Object beforeBodyWrite(Object body, final MethodParameter methodParameter, final MediaType mediaType,
         final Class<? extends HttpMessageConverter<?>> c, final ServerHttpRequest serverHttpRequest,
         final ServerHttpResponse serverHttpResponse) {
-
+      String[] urls = new String[] { "api-docs", "swagger" };
+      for (String u : urls) {
+        if (serverHttpRequest.getURI().getPath().contains(u)) {
+          return body;
+        }
+      }
       final Gson gson = new Gson();
       final ReturnMessage message = new ReturnMessage();
       message.setPath(serverHttpRequest.getURI().getPath());

@@ -64,25 +64,8 @@ public class BaseController<S extends IService<T>, T> {
 
   @DeleteMapping("/base/{id}")
   @ApiOperation(value = "删除", notes = "公用方法", position = 21)
-  public boolean removeById(@ApiParam(value = "主键", required = true) @PathVariable String id) {
-    return service.removeById(id);
-  }
-
-  @DeleteMapping("/base/ids")
-  @ApiOperation(value = "删除-通过多主键", notes = "公用方法", position = 22)
-  public boolean removeByIds(@ApiParam(value = "主键集合", required = true) @RequestBody List<String> ids) {
-    return service.removeByIds(ids);
-  }
-
-  @DeleteMapping("/base/criteria")
-  @ApiOperation(value = "删除-通过条件", notes = "公用方法", position = 23)
-  public boolean removeByCriterias(
-      @ApiParam(value = "查询条件") @RequestBody(required = false) List<MybatisPlusEntity.CriteriaEntity> criterias) {
-    QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
-    for (MybatisPlusEntity.CriteriaEntity criteria : criterias) {
-      queryWrapper(queryWrapper, criteria);
-    }
-    return service.remove(queryWrapper);
+  public boolean removeById(@ApiParam(value = "主键集合，隔开", required = true) @PathVariable List<String> id) {
+    return service.removeByIds(id);
   }
 
   @GetMapping("/base/{id}")
